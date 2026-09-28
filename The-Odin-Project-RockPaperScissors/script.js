@@ -3,7 +3,6 @@ const playButton = document.getElementById('play')
 let humanscore = 0
 let computerscore = 0
 
-
 console.log('Hello world')
 
 function getComputerChoice(){
@@ -17,7 +16,6 @@ function getHumanChoice(){
   input.toLowerCase().trim()
   return input
 }
-
 
 function playRound(humanChoice, computeChoice){
   if(humanChoice === computeChoice){
@@ -37,7 +35,6 @@ function playRound(humanChoice, computeChoice){
   }
 }
 
-
 function playGame(){
   for (let i = 0; i < 5; i++){
     console.log(`Round ${i + 1}`)
@@ -53,6 +50,5 @@ function playGame(){
     console.log(`You Lose`)
   }
 }
-
 
 playButton.addEventListener('click', playGame)

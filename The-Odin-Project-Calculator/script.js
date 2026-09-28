@@ -3,17 +3,17 @@ const buttonsContainer = document.querySelectorAll('#buttons-container button')
 const clear = document.getElementById('clear')
 const equal = document.getElementById('equal')
 
-let firstNumber = '0'
-let secondNumber = '0'
-let chosenOperator = ''
-let hasResult = false
+let firstNumber = null
+let secondNumber = null
+let chosenOperator = null
 
 
-let hasFirstNumber = false
-let hasSecondNumber = false
+let waitingForSecondNumber = false  
+
+let evaluated = false
 
 
-display.innerHTML = 0
+display.textContent = '0'
 
 function operate(firstNumber, secondNumber, operator){
   const first = Number(firstNumber)
@@ -27,6 +27,9 @@ function operate(firstNumber, secondNumber, operator){
     case 'multiply':
       return first * second
     case 'divide':
+      if(second === 0){
+        return 'Error: Cannot divide by 0'
+      }
       return first / second
   }
 }
@@ -40,76 +43,109 @@ buttonsContainer.forEach((button) => {
 
   button.addEventListener('click', () => {
     if(decimal){
-      if(!display.innerHTML.includes('.')){
-        display.innerHTML += decimal
+      if(!display.textContent.includes('.')){
+        
+        if(secondNumber === null && chosenOperator === null){
+          firstNumber += '.'
+          display.textContent = firstNumber
+        }else{
+          secondNumber += '.'
+          display.textContent = secondNumber
+        }
       }
+      
     }
 
     if(number){
-      if(!hasFirstNumber){
-        if(display.innerHTML === '0'){
-          display.innerHTML = number
-        }else{
-          display.innerHTML += number
-        }
-        firstNumber = display.innerHTML
-      }
 
-      if(hasFirstNumber){
-        if(display.innerHTML === '0'){
-          display.innerHTML = number
+      if(evaluated){
+        firstNumber = null
+        secondNumber = null
+        chosenOperator = null
+        evaluated = false
+        waitingForSecondNumber = false
+        display.textContent = '0'
+      }
+  
+      if(waitingForSecondNumber){
+        secondNumber = number
+        waitingForSecondNumber = false
+      }else if(secondNumber === null){
+  
+        if(firstNumber === null){
+          firstNumber = number
+  
         }else{
-          if(hasResult){
-            display.innerHTML = number
-            hasResult = false
+          if(firstNumber === '0'){
+            firstNumber = number
           }else{
-            display.innerHTML += number
+            firstNumber += number
           }
         }
-        secondNumber = display.innerHTML
-      }
+        display.textContent = firstNumber
 
-      
+        return
+      }else{
+        if(secondNumber === '0'){
+          secondNumber = number
+        }else{
+          secondNumber += number
+        }
+      }
+      display.textContent = secondNumber
     }
 
 
     if(operator){
-      if(firstNumber !== '0' && secondNumber !== '0'){
-        
-        const res = String(operate(firstNumber, secondNumber, chosenOperator))
-        display.innerHTML = res
-        firstNumber = res
-        secondNumber = '0'
+      if(evaluated){
+        evaluated = false
         chosenOperator = operator
-        hasResult = true
+        waitingForSecondNumber = true 
+        return
       }
 
-      if(firstNumber !== '0' && secondNumber === '0' && !hasResult){
-        chosenOperator = operator
-        display.innerHTML = 0
-        hasFirstNumber = true
+      if(firstNumber === null) return
+
+      if(chosenOperator && secondNumber !== null){
+        const res = operate(firstNumber, secondNumber, chosenOperator)
+        if(res === isNaN){
+          display.textContent = 'Error: Cannot divide by 0'
+          return
+        }
+        display.textContent = String(res)
+
+        secondNumber = null
       }
+
+      chosenOperator = operator
+      waitingForSecondNumber = true
+
     }
 
-    console.log(`num1: ${firstNumber}, num2: ${secondNumber}, opr: ${chosenOperator}, hasRes: ${hasResult}, hasFirstNum: ${hasFirstNumber}, hasSecNum: ${hasSecondNumber}`)
+
+    console.log(`num1: ${firstNumber}, num2: ${secondNumber}, opr: ${chosenOperator}, evaluated: ${evaluated}, waitingForSecond: ${waitingForSecondNumber}`)
   })
 })
 
 
 equal.addEventListener('click', () => {
-  display.innerHTML = String(operate(firstNumber, secondNumber, chosenOperator))
-  firstNumber = display.innerHTML
-  secondNumber = '0'
-  hasResult = true
+  const res = String(operate(firstNumber, secondNumber, chosenOperator))
+
+  firstNumber = res
+  secondNumber = null
+  chosenOperator = null
+  waitingForSecondNumber = false
+  evaluated = true
+  display.textContent = res
 })
 
 clear.addEventListener('click', () => {
-  display.innerHTML = '0'
-  firstNumber = '0'
-  secondNumber = '0'
-  chosenOperator = ''
-  hasFirstNumber = false
-  hasResult = false
+  display.textContent = '0'
+  firstNumber = null
+  secondNumber = null
+  chosenOperator = null
+  evaluated = false
+  waitingForSecondNumber = false
 })
 
 

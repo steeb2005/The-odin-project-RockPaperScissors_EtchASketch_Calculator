@@ -25,6 +25,7 @@ const RGB = [
   'rgb(30, 30, 30)'     
 ];
 
+
 let gridSize = 16
 let enabledColorRandomized = false;
 
