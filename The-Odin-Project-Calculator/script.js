@@ -148,5 +148,3 @@ clear.addEventListener('click', () => {
   waitingForSecondNumber = false
 })
 
-
-
