@@ -44,8 +44,11 @@ function playGame(){
     console.log(result)
   }
   console.log(`Game Over\nHuman: ${humanscore}\nComputer: ${computerscore}\n`)
+
   if (humanscore > computerscore){
     console.log(`You win!`)
+  } else if (computerscore === humanscore){
+    console.log(`Its a tie!`)
   } else {
     console.log(`You Lose`)
   }
